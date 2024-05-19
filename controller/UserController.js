@@ -2,6 +2,7 @@ const userSchema = require("../model/UserSchema");
 const bcrypt = require("bcrypt");
 const salt = 10;
 const nodemailer = require("nodemailer");
+const jsonwebtoken = require("jsonwebtoken");
 
 const register = (req, res) => {
   userSchema.findOne({ email: req.body.email }).then((result) => {
@@ -54,4 +55,33 @@ const register = (req, res) => {
   });
 };
 
-module.exports = { register };
+const login = (req, res) => {
+    userSchema.findOne({'email': req.body.email}).then(selectedUser => {
+        if(selectedUser !== null){
+            bcrypt.compare(req.body.password, selectedUser.password, function(err, result) {
+                if(err){
+                    return res.status(500).json({'error' : "internal server error"})
+                }
+
+                if(result){
+                    const payload = {
+                        email : selectedUser.email
+                    }
+    
+                    const secretKey = process.env.SECRET_KEY
+    
+                    const expiresIn = '24h';
+    
+                    const token = jsonwebtoken.sign(payload,secretKey,{expiresIn});
+                    return res.status(200).json({'token': token});
+                }else{
+                    return res.status(500).json({'message': 'incorrect password'});
+                }
+            });
+        }else{
+            return res.status(404).json({"error": "not found!"});
+        }
+    })
+}
+
+module.exports = { register , login };
