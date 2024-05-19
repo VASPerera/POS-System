@@ -1,24 +1,57 @@
-const userSchema = require ("../model/UserSchema");
-const bcrypt = require ("bcrypt");
+const userSchema = require("../model/UserSchema");
+const bcrypt = require("bcrypt");
 const salt = 10;
+const nodemailer = require("nodemailer");
 
 const register = (req, res) => {
-    bcrypt.hash(req.body.password, salt, function(err, hash){
-        if(err){
-            return res.status(500).json(err);
+  userSchema.findOne({ email: req.body.email }).then((result) => {
+    if (result == null) {
+      bcrypt.hash(req.body.password, salt, function (err, hash) {
+        if (err) {
+          return res.status(500).json(err);
         }
         const user = new userSchema({
-            fullName : req.body.fullName,
-            password : hash,
-            email : req.body.email,
-            activeState : req.body.activeState
+          fullName: req.body.fullName,
+          password: hash,
+          email: req.body.email,
+          activeState: req.body.activeState,
         });
-        user.save().then(saveResponse => {
-            return res.status(201).json({"message": "saved"});
-        }).catch(error => {
-            return res.status(500).json(error);
-        });
-    });
-}
 
-module.exports = {register};
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "avishka1999perera@gmail.com",
+            pass: "hjba dzmz nhzz rjut",
+          },
+        });
+
+        const mailOption = {
+          from: "avishka1999perera@gmail.com",
+          to: req.body.email,
+          subject: "New Account Creation",
+          text: "You have created your account !",
+        };
+
+        transporter.sendMail(mailOption, function (err, info) {
+          if (err) {
+            return res.status(500).json({ error: err });
+          } else {
+            // return res.status(200).json({'information':info.response});
+            user
+              .save()
+              .then((saveResponse) => {
+                return res.status(201).json({ message: "saved", saveResponse });
+              })
+              .catch((error) => {
+                return res.status(500).json(error);
+              });
+          }
+        });
+      });
+    } else {
+      return res.status(409).json({ error: "email already exists" });
+    }
+  });
+};
+
+module.exports = { register };

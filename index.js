@@ -7,10 +7,15 @@ const port = process.env.PORT  ;
 
 const app = express();
 
+const user = require("./routes/UserRouter");
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(bodyParser.json())
+
+
+
+app.use("/user",user);
 
 // try{
 //     mongoose.connect("mongodb+srv://avishka1999perera:Avi!@#123@cluster0.una9b23.mongodb.net");
