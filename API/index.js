@@ -7,7 +7,11 @@ const port = process.env.PORT  ;
 
 const app = express();
 
-const user = require("./routes/UserRouter");
+const userRoute = require("./routes/UserRouter");
+const customerRoute = require("./routes/CustomerRouterr");
+const orderRoute = require("./routes/OrderRouter");
+const productRoute = require("./routes/ProductRouter");
+
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
@@ -15,7 +19,10 @@ app.use(bodyParser.json())
 
 
 
-app.use("/user",user);
+app.use("/user",userRoute);
+app.use("/order",orderRoute);
+app.use("/product",productRoute);
+app.use("/customer",customerRoute);
 
 // try{
 //     mongoose.connect("mongodb+srv://avishka1999perera:Avi!@#123@cluster0.una9b23.mongodb.net");

@@ -75,7 +75,7 @@ const login = (req, res) => {
                     const token = jsonwebtoken.sign(payload,secretKey,{expiresIn});
                     return res.status(200).json({'token': token});
                 }else{
-                    return res.status(500).json({'message': 'incorrect password'});
+                    return res.status(401).json({'message': 'incorrect password'});
                 }
             });
         }else{
