@@ -8,7 +8,7 @@ const port = process.env.PORT  ;
 const app = express();
 
 const userRoute = require("./routes/UserRouter");
-const customerRoute = require("./routes/CustomerRouterr");
+const customerRoute = require("./routes/CustomerRouter");
 const orderRoute = require("./routes/OrderRouter");
 const productRoute = require("./routes/ProductRouter");
 
