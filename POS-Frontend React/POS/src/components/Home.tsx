@@ -1,5 +1,6 @@
 import DefaultCard from "./cards/DefaultCard";
 import DefaultChart from "./cards/DefaultChart";
+import MinQtyCard from "./cards/MinQtyCard";
 
 export default function Home() {
   return (
@@ -45,12 +46,19 @@ export default function Home() {
       </div>
       <br></br>
       <div className="row">
-        <div className="col-12 col-md-6">
+        <div className="col-12 col-md-9">
             <div className="context">
                 <DefaultChart></DefaultChart>
             </div>
         </div>
-        <div className="col-12 col-md-6"></div>
+        <div className="col-12 col-md-3">
+            <MinQtyCard/>
+            <MinQtyCard/>
+            <MinQtyCard/>
+            <MinQtyCard/>
+            <MinQtyCard/>
+            <MinQtyCard/>
+        </div>
       </div>
     </div>
   );
