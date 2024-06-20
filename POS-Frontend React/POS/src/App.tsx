@@ -1,7 +1,9 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route , Link } from "react-router-dom";
 import Home from "./components/Home";
 import Customer from "./components/Customer";
+import Product from "./components/Product";
+import Order from "./components/Order";
 
 function App() {
   return (
@@ -26,18 +28,18 @@ function App() {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
                   <div className="navbar-nav">
-                    <a className="nav-link active" aria-current="page" href="#">
+                    <Link className="nav-link active" aria-current="page" to="/">
                       Home
-                    </a>
-                    <a className="nav-link" href="#">
-                      Features
-                    </a>
-                    <a className="nav-link" href="#">
-                      Pricing
-                    </a>
-                    <a className="nav-link disabled" aria-disabled="true">
-                      Disabled
-                    </a>
+                    </Link>
+                    <Link className="nav-link" to="/customer">
+                      Customers
+                    </Link>
+                    <Link className="nav-link" to="/orders">
+                      Order Management
+                    </Link>
+                    <Link className="nav-link"to="/product">
+                      Products
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -46,6 +48,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home></Home>}></Route>
           <Route path="/customer" element={<Customer></Customer>}></Route>
+          <Route path="/product" element={<Product></Product>}></Route>
+          <Route path="/orders" element={<Order></Order>}></Route>
         </Routes>
       </BrowserRouter>
     </>
