@@ -80,6 +80,22 @@ export default function Customer() {
                     </button>
                   </td>
                 </tr>
+                <tr>
+                  <td>#00001</td>
+                  <td>Nimal Bandara</td>
+                  <td>Colombo</td>
+                  <td>25000</td>
+                  <td>
+                    <button className="btn btn-outline-danger btn-sm">
+                      Delete
+                    </button>
+                  </td>
+                  <td>
+                    <button className="btn btn-outline-success btn-sm">
+                      Update
+                    </button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
