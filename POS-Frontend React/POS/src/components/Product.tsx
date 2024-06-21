@@ -60,7 +60,7 @@ export default function Product() {
         <br></br>
         <div className="row">
           <div className="col-12">
-            <button className="btn btn-primary col-12">Save Customer</button>
+            <button className="btn btn-primary col-12">Save Product</button>
           </div>
         </div>
         <hr></hr>
