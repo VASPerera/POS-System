@@ -1,4 +1,36 @@
-export default function Customer() {
+import { useState } from "react";
+import axios from "axios";
+
+interface Customer {
+  id: string;
+  name: string;
+  address: string;
+  salary: string;
+}
+
+const Customer: React.FC = () => {
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [salary, setSalary] = useState<number>();
+
+  const saveCustomer = async() => {
+    try {
+      const response = await axios.post('http://localhost:3005/customer/create',{
+        name : name,
+        address : address,
+        sallery : salary
+      })
+
+      setName('');
+      setAddress('');
+      setSalary(0);
+
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div>
       <br />
@@ -7,13 +39,21 @@ export default function Customer() {
           <div className="col-12 col-sm-6 col-md-4">
             <div className="form-group">
               <label htmlFor="customerName">Customer Name</label>
-              <input type="text" className="form-control" id="customerName" />
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                type="text"
+                className="form-control"
+                id="customerName"
+              />
             </div>
           </div>
           <div className="col-12 col-sm-6 col-md-4">
             <div className="form-group">
               <label htmlFor="customerAddress">Customer Address</label>
               <input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 type="text"
                 className="form-control"
                 id="customerAddress"
@@ -24,6 +64,8 @@ export default function Customer() {
             <div className="form-group">
               <label htmlFor="customerSallery">Sallery</label>
               <input
+                value={salary}
+                onChange={(e) => {setSalary(parseFloat(e.target.value))}}
                 type="number"
                 className="form-control"
                 id="customerSallery"
@@ -34,7 +76,7 @@ export default function Customer() {
         <br></br>
         <div className="row">
           <div className="col-12">
-            <button className="btn btn-primary col-12">Save Customer</button>
+            <button className="btn btn-primary col-12" onClick={saveCustomer}>Save Customer</button>
           </div>
         </div>
         <hr></hr>
@@ -103,4 +145,6 @@ export default function Customer() {
       </div>
     </div>
   );
-}
+};
+
+export default Customer;
