@@ -1,6 +1,8 @@
 const customerSchema = require("../model/CustomerSchema");
 
 const create = (req, res) => {
+
+  
   const customer = new customerSchema({
     name: req.body.name,
     address: req.body.address,
@@ -50,6 +52,7 @@ const update = async(req, res) => {
   }
 };
 const deleteById = async(req, res) => {
+  
     const deleteData =  await customerSchema.findOneAndDelete({'_id': req.params.id});
 
     if(deleteData){
@@ -73,9 +76,11 @@ const findALL = (req, res) => {
             query.$text = {$search : searchText}
         }
         const skip = (pageNumber-1) * pageSize
-        const data = customerSchema.find(query).limit(pageSize).skip(skip)
+        customerSchema.find(query).limit(pageSize).skip(skip).then(response => {
+          return res.status(200).json(response)
+        })
 
-        return res.status(200).json(data);
+        
     } catch (error) {
         return res.status(500).json({'message': 'internal server error'});
     }

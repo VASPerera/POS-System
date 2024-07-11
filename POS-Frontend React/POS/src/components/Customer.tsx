@@ -1,17 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 interface Customer {
-  id: string;
+  _id: string;
   name: string;
   address: string;
-  salary: string;
+  sallery: string;
 }
 
 const Customer: React.FC = () => {
+  
+  const [customers, setCustomers] = useState<Customer[]>([])
+
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [salary, setSalary] = useState<number>();
+
+  useEffect(() => {
+    findAllCustomers();
+  },[])
+
+  const findAllCustomers = async() => {
+    const response = await axios.get('http://localhost:3005/customer/find-all?searchText=&page=1&size=10')
+    setCustomers(response.data)
+    console.log(customers)
+  }
+
+  const deleteCustomer = async(id : any) => {
+    const response = await axios.delete('http://localhost:3005/customer/delete-by-id/'+id)
+    console.log(response)
+    findAllCustomers()
+  }
 
   const saveCustomer = async() => {
     try {
@@ -30,6 +49,10 @@ const Customer: React.FC = () => {
       console.log(error)
     }
   }
+
+
+
+ 
 
   return (
     <div>
@@ -106,13 +129,20 @@ const Customer: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>#00001</td>
-                  <td>Nimal Bandara</td>
-                  <td>Colombo</td>
-                  <td>25000</td>
+                {customers.map((customer, index) => 
+                  <tr key={index}>
+                  <td>#{index}</td>
+                  <td>{customer.name}</td>
+                  <td>{customer.address}</td>
+                  <td>{customer.sallery}</td>
                   <td>
-                    <button className="btn btn-outline-danger btn-sm">
+                    <button 
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={(e) => {
+                      if(confirm('are you sure ?')){
+                        deleteCustomer(customer._id)
+                      }
+                    }}>
                       Delete
                     </button>
                   </td>
@@ -122,22 +152,8 @@ const Customer: React.FC = () => {
                     </button>
                   </td>
                 </tr>
-                <tr>
-                  <td>#00001</td>
-                  <td>Nimal Bandara</td>
-                  <td>Colombo</td>
-                  <td>25000</td>
-                  <td>
-                    <button className="btn btn-outline-danger btn-sm">
-                      Delete
-                    </button>
-                  </td>
-                  <td>
-                    <button className="btn btn-outline-success btn-sm">
-                      Update
-                    </button>
-                  </td>
-                </tr>
+                )}
+                
               </tbody>
             </table>
           </div>
