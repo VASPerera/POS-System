@@ -24,7 +24,7 @@ const create = (req, res) => {
 const findById = (req, res) => {
   customerSchema.findOne({ _id: req.params.id }).then((selectedObj) => {
     if (selectedObj !== null) {
-      return res.status(200).json({ data: selectedObj });
+      return res.status(200).json( selectedObj );
     } else {
       return res.status(404).json({ message: "not found!" });
     }
