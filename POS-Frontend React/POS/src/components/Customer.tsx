@@ -32,6 +32,11 @@ const Customer: React.FC = () => {
     findAllCustomers()
   }
 
+  const loadModel = async(id : any) => {
+    const response = await axios.get('http://localhost:3005/customer//find-by-id/'+id)
+    console.log(response.data)
+  }
+
   const saveCustomer = async() => {
     try {
       const response = await axios.post('http://localhost:3005/customer/create',{
@@ -147,7 +152,7 @@ const Customer: React.FC = () => {
                     </button>
                   </td>
                   <td>
-                    <button className="btn btn-outline-success btn-sm">
+                    <button onClick={() => loadModel(customer._id)} className="btn btn-outline-success btn-sm">
                       Update
                     </button>
                   </td>
