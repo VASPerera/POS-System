@@ -1,5 +1,8 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import axios from "axios";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
 // import {storage} from "../config/firebase"
 
 
@@ -9,13 +12,14 @@ interface Product {
   description: string;
   image: string;
   unitPrice: string;
-  qtyOnHand: boolean;
+  qtyOnHand: string;
 }
 
 const Product:React.FC = () => {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [image, setImage] = useState<File | null>(null);
+  const [modalview, setModalview] = useState<boolean>(false);
   
 
 
@@ -23,6 +27,12 @@ const Product:React.FC = () => {
   const [description, setDescription] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
   const [qtyOnHand, setQtyOnHand] = useState("");
+
+  const [SelectedProductId, setSelectedProductId] = useState("")
+  const [SelectedProductName, setSelectedProductName] = useState("")
+  const [updateDescription, setupdateDescription] = useState("");
+  const [updateUnitPrice, setupdateUnitPrice] = useState("");
+  const [updateQtyOnHand, setupdateQtyOnHand] = useState("");
 
 
   const handleImageChange = (e:ChangeEvent<HTMLInputElement>) =>{
@@ -60,18 +70,17 @@ const Product:React.FC = () => {
     const response = await axios.get(
       "http://localhost:3005/product/find-all?searchText=&page=1&size=10"
     );
-    console.log(response.data)
     setProducts(response.data);
     
   };
 
-  // const deleteProduct = async (id: any) => {
-  //   const response = await axios.delete(
-  //     "http://localhost:3005/customer/delete-by-id/" + id
-  //   );
-  //   console.log(response);
-  //   findAllProducts();
-  // };
+  const deleteProduct = async (id: any) => {
+    const response = await axios.delete(
+      "http://localhost:3005/product/delete-by-id/" + id
+    );
+    console.log(response);
+    findAllProducts();
+  };
 
   const saveProduct = async() => {
     const imgURL = 'https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL3JtMzYyLTAxYS1tb2NrdXAuanBn.jpg'
@@ -95,7 +104,6 @@ const Product:React.FC = () => {
       setUnitPrice('');
       setQtyOnHand('');
 
-      console.log(response);
       findAllProducts()
 
     } catch (error) {
@@ -110,6 +118,49 @@ const Product:React.FC = () => {
     //   })
     // }
   }
+
+  const loadModel = async (id: any) => {
+    
+    const response = await axios.get(
+      "http://localhost:3005/product/find-by-id/" + id
+    );
+    console.log(response.data);
+    setModalview(true);
+
+    setSelectedProductId(response.data._id)
+    setSelectedProductName(response.data.name)
+    setupdateDescription(response.data.description)
+    setupdateQtyOnHand(response.data.qtyOnHand)
+    setupdateUnitPrice(response.data.unitPrice)
+  };
+
+
+  const updateCustomer = async () => {
+    try {
+
+      const imgURL = 'https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL3JtMzYyLTAxYS1tb2NrdXAuanBn.jpg'
+
+      
+      const response = await axios.put(
+        "http://localhost:3005/product/update/"+SelectedProductId,
+        {
+          name: SelectedProductName,
+          description: updateDescription,
+          image: imgURL,
+          unitPrice: updateUnitPrice,
+          qtyOnHand: updateQtyOnHand,
+        }
+      );
+
+      setModalview(false)
+      findAllProducts();
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   
 
 
@@ -211,17 +262,19 @@ const Product:React.FC = () => {
               <tbody>
                 {products.map((product, index) => (
                   <tr>
-                  <td>#00001</td>
+                  <td>#{index}</td>
                   <td>{product.name}</td>
                   <td>{product.qtyOnHand}</td>
                   <td>{product.unitPrice}</td>
                   <td>
-                    <button className="btn btn-outline-danger btn-sm">
+                    <button className="btn btn-outline-danger btn-sm" onClick={() => {if(confirm('Are you sure ?')){
+                      deleteProduct(product._id)
+                    }}}>
                       Delete
                     </button>
                   </td>
                   <td>
-                    <button className="btn btn-outline-success btn-sm">
+                    <button className="btn btn-outline-success btn-sm" onClick={() => loadModel(product._id)}>
                       Update
                     </button>
                   </td>
@@ -239,6 +292,40 @@ const Product:React.FC = () => {
           </div>
         </div>
       </div>
+
+      <Modal show={modalview}>
+        <Modal.Header closeButton onClick={() => {setModalview(false)}}>
+          <Modal.Title>Update Customer</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-0" controlId="exampleForm.ControlInput1">
+            <Form.Label>Name</Form.Label>
+            <Form.Control type="text" placeholder="name@example.com" value={SelectedProductName} onChange={(e) => {setSelectedProductName(e.target.value)}}/>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Body>
+          <Form.Group className="mb-0" controlId="exampleForm.ControlInput1">
+            <Form.Label>description</Form.Label>
+            <Form.Control type="email" placeholder="name@example.com" value={updateDescription} onChange={(e) => {setupdateDescription(e.target.value)}} />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Body>
+          <Form.Group className="mb-0" controlId="exampleForm.ControlInput1">
+            <Form.Label>unitPrice</Form.Label>
+            <Form.Control type="email" placeholder="name@example.com" value={updateUnitPrice} onChange={(e) => setupdateUnitPrice(e.target.value)}/>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Body>
+          <Form.Group className="mb-0" controlId="exampleForm.ControlInput1">
+            <Form.Label>QTY on Hand</Form.Label>
+            <Form.Control type="email" placeholder="name@example.com" value={updateQtyOnHand} onChange={(e) => setupdateQtyOnHand(e.target.value)}/>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => {setModalview(false)}}>Close</Button>
+          <Button variant="primary" onClick={() => updateCustomer()}>Save Changes</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 }

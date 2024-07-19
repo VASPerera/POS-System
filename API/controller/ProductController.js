@@ -21,7 +21,7 @@ const create = (req, res) => {
 const findById = (req, res) => {
   productSchema.findOne({ _id: req.params.id }).then((selectedObj) => {
     if (selectedObj !== null) {
-      return res.status(200).json({ data: selectedObj });
+      return res.status(200).json( selectedObj );
     } else {
       return res.status(404).json({ message: "not found!" });
     }
@@ -76,10 +76,22 @@ const findALL = (req, res) => {
     }
 };
 
+const findALLMin = (req, res) => {
+  try {
+      
+      productSchema.find({qtyOnHand: {$lt:10}}).then(response => {
+        return res.status(200).json(response)
+      })
+  } catch (error) {
+      return res.status(500).json({'message': 'internal server error'});
+  }
+};
+
 module.exports = {
   create,
   findById,
   update,
   deleteById,
   findALL,
+  findALLMin
 };
