@@ -1,6 +1,27 @@
+import { useEffect, useState } from "react";
 
 
-export default function Product() {
+interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  image: string;
+  imageunitPrice: string;
+  qtyOnHand: boolean;
+}
+
+const Product:React.FC = () => {
+
+  const [products, setProducts] = useState<Product[]>([]);
+  
+
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [unitPrice, setUnitPrice] = useState("");
+  const [qtyOnHand, setQtyOnHand] = useState("");
+  const [image, setImage] = useState("");
+
 
   const styleObj:React.CSSProperties={
       marginBottom : '20px'
@@ -13,7 +34,7 @@ export default function Product() {
           <div className="col-12 col-sm-6 col-md-4" style={styleObj}>
             <div className="form-group">
               <label htmlFor="productName">Product Name</label>
-              <input type="text" className="form-control" id="productName" />
+              <input type="text" className="form-control" id="productName" onChange={(e) => setName(e.target.value)}/>
             </div>
           </div>
           <div className="col-12 col-sm-6 col-md-4">
@@ -23,6 +44,7 @@ export default function Product() {
                 type="text"
                 className="form-control"
                 id="price"
+                onChange={(e) => setUnitPrice(e.target.value)}
               />
             </div>
           </div>
@@ -33,6 +55,7 @@ export default function Product() {
                 type="text"
                 className="form-control"
                 id="qty"
+                onChange={(e) => setQtyOnHand(e.target.value)}
               />
             </div>
           </div>
@@ -43,6 +66,7 @@ export default function Product() {
                 type="file"
                 className="form-control"
                 id="image"
+                onChange={(e) => setImage(e.target.value)}
               />
             </div>
           </div>
@@ -53,6 +77,7 @@ export default function Product() {
                 rows={5}
                 className="form-control"
                 id="description"
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
           </div>
@@ -141,3 +166,5 @@ export default function Product() {
     </div>
   )
 }
+
+export default Product;
