@@ -1,8 +1,28 @@
 import DefaultCard from "./cards/DefaultCard";
 import DefaultChart from "./cards/DefaultChart";
 import MinQtyCard from "./cards/MinQtyCard";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import Product from "./Product";
 
-export default function Home() {
+const Home:React.FC = () => {
+  
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    findAllProducts();
+  }, []);
+
+  const findAllProducts = async () => {
+    const response = await axios.get(
+      "http://localhost:3005/product/find-all-min"
+    );
+    console.log(response.data)
+    setProducts(response.data);
+    
+  };
+
+
   return (
     <div className="container">
       <div className="row">
@@ -52,14 +72,16 @@ export default function Home() {
             </div>
         </div>
         <div className="col-12 col-md-3">
-            <MinQtyCard/>
-            <MinQtyCard/>
-            <MinQtyCard/>
-            <MinQtyCard/>
-            <MinQtyCard/>
-            <MinQtyCard/>
+
+          {products.map((product, index) => (
+              <MinQtyCard name={product.name} description={product.description} image={product.image} key={index}/>
+          ))}
+            
+            
         </div>
       </div>
     </div>
   );
 }
+
+export default Home;

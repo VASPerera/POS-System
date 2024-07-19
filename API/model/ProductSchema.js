@@ -18,7 +18,7 @@ const ProductSchema = new mongoose.Schema({
     required: true,
   },
   qtyOnHand: {
-    type: String,
+    type: Number,
     required: true,
   },
 });
