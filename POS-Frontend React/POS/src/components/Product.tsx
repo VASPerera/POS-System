@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import axios from "axios";
+// import {storage} from "../config/firebase"
 
 
 interface Product {
@@ -6,13 +8,14 @@ interface Product {
   name: string;
   description: string;
   image: string;
-  imageunitPrice: string;
+  unitPrice: string;
   qtyOnHand: boolean;
 }
 
 const Product:React.FC = () => {
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [image, setImage] = useState<File | null>(null);
   
 
 
@@ -20,7 +23,94 @@ const Product:React.FC = () => {
   const [description, setDescription] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
   const [qtyOnHand, setQtyOnHand] = useState("");
-  const [image, setImage] = useState("");
+
+
+  const handleImageChange = (e:ChangeEvent<HTMLInputElement>) =>{
+    if(e.target.files && e.target.files[0]){
+      setImage(e.target.files[0])
+    }
+  }
+
+  useEffect(() => {
+    findAllProducts();
+  }, []);
+
+  // const updateProduct = async () => {
+  //   try {
+
+      
+  //     const response = await axios.put(
+  //       "http://localhost:3005/customer/update/"+SelectedCustomerId,
+  //       {
+  //         name: updateName,
+  //         address: updateAddress,
+  //         sallery: updateSalary,
+  //       }
+  //     );
+
+  //     setModalview(false)
+  //     findAllCustomers();
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  const findAllProducts = async () => {
+    const response = await axios.get(
+      "http://localhost:3005/product/find-all?searchText=&page=1&size=10"
+    );
+    console.log(response.data)
+    setProducts(response.data);
+    
+  };
+
+  // const deleteProduct = async (id: any) => {
+  //   const response = await axios.delete(
+  //     "http://localhost:3005/customer/delete-by-id/" + id
+  //   );
+  //   console.log(response);
+  //   findAllProducts();
+  // };
+
+  const saveProduct = async() => {
+    const imgURL = 'https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL3JtMzYyLTAxYS1tb2NrdXAuanBn.jpg'
+
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3005/product/create",
+        {
+          name: name,
+          description: description,
+          image: imgURL,
+          unitPrice: unitPrice,
+          qtyOnHand: qtyOnHand,
+        }
+      );
+
+      setName("");
+      setDescription("");
+      setImage(null)
+      setUnitPrice('');
+      setQtyOnHand('');
+
+      console.log(response);
+      findAllProducts()
+
+    } catch (error) {
+      console.log(error);
+    }
+    // if(image){
+    //   const storageRef = storage.ref(`images/${Math.random() + '-' +image.name}`);
+    //   storageRef.put(image).then(() => {
+    //     storageRef.getDownloadURL().then((url)=>{
+    //       console.log(url)
+    //     })
+    //   })
+    // }
+  }
+  
 
 
   const styleObj:React.CSSProperties={
@@ -34,7 +124,7 @@ const Product:React.FC = () => {
           <div className="col-12 col-sm-6 col-md-4" style={styleObj}>
             <div className="form-group">
               <label htmlFor="productName">Product Name</label>
-              <input type="text" className="form-control" id="productName" onChange={(e) => setName(e.target.value)}/>
+              <input type="text" className="form-control" id="productName" onChange={(e) => setName(e.target.value)} value={name}/>
             </div>
           </div>
           <div className="col-12 col-sm-6 col-md-4">
@@ -44,7 +134,8 @@ const Product:React.FC = () => {
                 type="text"
                 className="form-control"
                 id="price"
-                onChange={(e) => setUnitPrice(e.target.value)}
+                onChange={(e) => setUnitPrice(e.target.value) }
+                value={unitPrice}
               />
             </div>
           </div>
@@ -56,6 +147,7 @@ const Product:React.FC = () => {
                 className="form-control"
                 id="qty"
                 onChange={(e) => setQtyOnHand(e.target.value)}
+                value={qtyOnHand}
               />
             </div>
           </div>
@@ -66,7 +158,7 @@ const Product:React.FC = () => {
                 type="file"
                 className="form-control"
                 id="image"
-                onChange={(e) => setImage(e.target.value)}
+                onChange={handleImageChange}
               />
             </div>
           </div>
@@ -78,6 +170,7 @@ const Product:React.FC = () => {
                 className="form-control"
                 id="description"
                 onChange={(e) => setDescription(e.target.value)}
+                value={description}
               />
             </div>
           </div>
@@ -85,7 +178,7 @@ const Product:React.FC = () => {
         <br></br>
         <div className="row">
           <div className="col-12">
-            <button className="btn btn-primary col-12">Save Product</button>
+            <button className="btn btn-primary col-12" onClick={saveProduct}>Save Product</button>
           </div>
         </div>
         <hr></hr>
@@ -116,11 +209,12 @@ const Product:React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                {products.map((product, index) => (
+                  <tr>
                   <td>#00001</td>
-                  <td>Nimal Bandara</td>
-                  <td>Colombo</td>
-                  <td>25000</td>
+                  <td>{product.name}</td>
+                  <td>{product.qtyOnHand}</td>
+                  <td>{product.unitPrice}</td>
                   <td>
                     <button className="btn btn-outline-danger btn-sm">
                       Delete
@@ -137,27 +231,9 @@ const Product:React.FC = () => {
                     </button>
                   </td>
                 </tr>
-                <tr>
-                  <td>#00001</td>
-                  <td>Nimal Bandara</td>
-                  <td>Colombo</td>
-                  <td>25000</td>
-                  <td>
-                    <button className="btn btn-outline-danger btn-sm">
-                      Delete
-                    </button>
-                  </td>
-                  <td>
-                    <button className="btn btn-outline-success btn-sm">
-                      Update
-                    </button>
-                  </td>
-                  <td>
-                    <button className="btn btn-outline-info btn-sm">
-                      View
-                    </button>
-                  </td>
-                </tr>
+                ))}
+                
+                
               </tbody>
             </table>
           </div>

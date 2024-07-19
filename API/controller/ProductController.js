@@ -68,9 +68,9 @@ const findALL = (req, res) => {
             query.$text = {$search : searchText}
         }
         const skip = (pageNumber-1) * pageSize
-        const data = productSchema.find(query).limit(pageSize).skip(skip)
-
-        return res.status(200).json(data);
+        productSchema.find(query).limit(pageSize).skip(skip).then(response => {
+          return res.status(200).json(response)
+        })
     } catch (error) {
         return res.status(500).json({'message': 'internal server error'});
     }
