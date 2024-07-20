@@ -1,4 +1,9 @@
-export default function Order() {
+import { useEffect, useState } from "react";
+import Customer from "./Customer";
+import axios from "axios";
+import Product from "./Product";
+
+const Order:React.FC = () =>  {
   const styleObj: React.CSSProperties = {
     marginBottom: "20px",
   };
@@ -14,6 +19,63 @@ export default function Order() {
     color : 'red',
     margin : '0'
   }
+
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [products, setProducts] = useState<Product[]>([]);
+
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [salary, setSalary] = useState<number>();
+
+  const [pname, setPName] = useState("");
+  const [description, setDescription] = useState("");
+  const [unitPrice, setUnitPrice] = useState("");
+  const [qtyOnHand, setQtyOnHand] = useState("");
+  
+
+  useEffect(() => {
+    findAllCustomers();
+    findAllProducts();
+  },[])
+
+  const findAllCustomers = async () => {
+    const response = await axios.get(
+      "http://localhost:3005/customer/find-all?searchText=&page=1&size=10"
+    );
+    setCustomers(response.data);
+    
+  };
+
+  const findAllProducts = async () => {
+    const response = await axios.get(
+      "http://localhost:3005/product/find-all?searchText=&page=1&size=10"
+    );
+    setProducts(response.data);
+    
+  };
+
+  const getCustomerById = async(id:any) => {
+    const response = await axios.get(
+      "http://localhost:3005/customer//find-by-id/" + id
+    );
+
+    setName(response.data.name)
+    setAddress(response.data.address)
+    setSalary(response.data.sallery)
+    
+  }
+
+  const getProductById = async(id: any) => {
+    const response = await axios.get(
+      "http://localhost:3005/product/find-by-id/" + id
+    );
+    setPName(response.data.name)
+    setDescription(response.data.description)
+    setUnitPrice(response.data.unitPrice)
+    setQtyOnHand(response.data.qtyOnHand)
+  }
+
+
   return (
     <div>
       <br></br>
@@ -22,19 +84,19 @@ export default function Order() {
           <div className="col-12 col-sm-6 col-md-3" style={styleObj}>
             <div className="form-group">
               <label htmlFor="customer">Select Customer</label>
-              <select id="customer" className="form-control">
-                <option value="#" disabled>
-                  Use Options
-                </option>
-                <option value="#">Customer 1</option>
-                <option value="#">Customer 2</option>
+              <select id="customer" className="form-control" onChange={(e) => getCustomerById(e.target.value)}>
+                <option value="">select value</option>
+                {customers.map((customer, index)=> (
+                    <option key={index} value={customer._id}>{customer.name}</option>
+                ))}
+                
               </select>
             </div>
           </div>
           <div className="col-12 col-sm-6 col-md-3" style={styleObj}>
             <div className="form-group">
               <label htmlFor="name">Customer name</label>
-              <input type="text" className="form-control" id="name" disabled />
+              <input type="text" className="form-control" id="name"  disabled value={name}/>
             </div>
           </div>
           <div className="col-12 col-sm-6 col-md-3">
@@ -45,17 +107,19 @@ export default function Order() {
                 className="form-control"
                 id="address"
                 disabled
+                value={address}
               />
             </div>
           </div>
           <div className="col-12 col-sm-6 col-md-3" style={styleObj}>
             <div className="form-group">
-              <label htmlFor="address">Customer address</label>
+              <label htmlFor="address">Customer Salary</label>
               <input
                 type="text"
                 className="form-control"
                 id="address"
                 disabled
+                value={salary}
               />
             </div>
           </div>
@@ -65,12 +129,16 @@ export default function Order() {
           <div className="col-12 col-sm-6 col-md-3" style={styleObj}>
             <div className="form-group">
               <label htmlFor="product">Select Product</label>
-              <select id="product" className="form-control">
+              <select id="product" className="form-control" onChange={(e) => {
+                getProductById(e.target.value)
+              }}>
+                {products.map((product,index) => (
+                    <option key={index} value={product._id}>{product.name}</option>
+                ))}
                 <option value="#" disabled>
                   Use Options
                 </option>
-                <option value="#">Customer 1</option>
-                <option value="#">Customer 2</option>
+                
               </select>
             </div>
           </div>
@@ -82,6 +150,7 @@ export default function Order() {
                 className="form-control"
                 id="description"
                 disabled
+                value={description}
               />
             </div>
           </div>
@@ -93,6 +162,7 @@ export default function Order() {
                 className="form-control"
                 id="price"
                 disabled
+                value={unitPrice}
               />
             </div>
           </div>
@@ -104,6 +174,7 @@ export default function Order() {
                 className="form-control"
                 id="qtyOnHand"
                 disabled
+                value={qtyOnHand}
               />
             </div>
           </div>
@@ -169,3 +240,5 @@ export default function Order() {
     </div>
   );
 }
+
+export default Order;
