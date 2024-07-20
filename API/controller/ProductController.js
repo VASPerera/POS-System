@@ -80,7 +80,20 @@ const findALLMin = (req, res) => {
   try {
       
       productSchema.find({qtyOnHand: {$lt:10}}).then(response => {
-        console.log(response)
+        return res.status(200).json(response)
+
+        
+      })
+      
+  } catch (error) {
+      return res.status(500).json({'message': 'internal server error'});
+  }
+};
+
+const findALLCount = (req, res) => {
+  try {
+      
+      productSchema.countDocuments().then(response => {
         return res.status(200).json(response)
 
         
@@ -97,5 +110,6 @@ module.exports = {
   update,
   deleteById,
   findALL,
-  findALLMin
+  findALLMin,
+  findALLCount
 };

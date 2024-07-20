@@ -11,5 +11,6 @@ router.delete('/delete-by-id/:id',productController.deleteById);
 router.put('/update/:id',productController.update);
 router.get('/find-all',productController.findALL);
 router.get('/find-all-min',productController.findALLMin);
+router.get('/find-all-count',productController.findALLCount);
 
 module.exports = router;

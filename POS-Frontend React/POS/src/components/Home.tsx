@@ -11,14 +11,23 @@ const Home:React.FC = () => {
 
   useEffect(() => {
     findAllProducts();
+
+    findAllCounts();
   }, []);
 
   const findAllProducts = async () => {
     const response = await axios.get(
       "http://localhost:3005/product/find-all-min"
     );
-    console.log(response.data)
     setProducts(response.data);
+    
+  };
+
+  const findAllCounts = async () => {
+    const response = await axios.get(
+      "http://localhost:3005/product/find-all-count"
+    );
+    
     
   };
 
