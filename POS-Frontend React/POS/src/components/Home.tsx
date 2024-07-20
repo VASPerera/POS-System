@@ -11,6 +11,7 @@ const Home:React.FC = () => {
   const [productCount, setProductCount] = useState<number>(0);
   const [customerCount, setCustomerCount] = useState<number>(0);
   const [orderCount, setOrderCount] = useState<number>(0);
+  const [income, setIncome] = useState<number>(0);
 
   useEffect(() => {
     findAllProducts();
@@ -41,6 +42,11 @@ const Home:React.FC = () => {
       "http://localhost:3005/order/find-all-count"
     );
     setOrderCount(orderCounts.data)
+
+    const income = await axios.get(
+      "http://localhost:3005/order/find-all-income"
+    );
+    setIncome(income.data.totalCostSum)
     
   };
 
@@ -80,7 +86,7 @@ const Home:React.FC = () => {
             tumbnail='https://img.freepik.com/premium-photo/growth-money-arrow-success-financial-business-coin-concept-investment-earnings-background-with-profit-graph-finance-development-increase-economic-market-chart-digital-stock-currency-strategy_79161-2472.jpg?w=1380'
             title = 'Income'
             description='Sdd'
-            value={550}
+            value={income}
             key={4}
           />
         </div>

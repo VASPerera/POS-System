@@ -97,11 +97,33 @@ const findALLCount = (req, res) => {
   }
 };
 
+const findALLIncome = (req, res) => {
+  try {
+      
+      const result= orderSchema.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalCostSum : {$sum: '$totalCost'}
+          }
+        }
+      ])
+
+      const totalCostSum = result.length > 0 ? result[0].totalCostSum : 0;
+
+      return res.status(200).json({totalCostSum})
+      
+  } catch (error) {
+      return res.status(500).json({'message': 'internal server error'});
+  }
+};
+
 module.exports = {
   create,
   findById,
   update,
   deleteById,
   findALL,
-  findALLCount
+  findALLCount,
+  findALLIncome
 };
