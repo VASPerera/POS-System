@@ -5,7 +5,7 @@ import Product from "./Product";
 
 interface Cart {
   _id: String | undefined;
-  productName: String | undefined;
+  description: String | undefined;
   unitPrice: number | undefined;
   qty: number | undefined;
   total: number | undefined;
@@ -36,9 +36,12 @@ const Order: React.FC = () => {
   const [qty, setQty] = useState<number>(0);
   const [address, setAddress] = useState("");
   const [salary, setSalary] = useState<number>();
+  const [netTotal, setnetTotal] = useState<number>(0);
 
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
+  );
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const [pname, setPName] = useState("");
   const [description, setDescription] = useState("");
@@ -49,6 +52,14 @@ const Order: React.FC = () => {
     findAllCustomers();
     findAllProducts();
   }, []);
+
+  const calTotal = () => {
+    let amount = 0;
+
+    // cart.map((data) => {
+    //   amount += data.total
+    // })
+  };
 
   const findAllCustomers = async () => {
     const response = await axios.get(
@@ -68,7 +79,7 @@ const Order: React.FC = () => {
     const response = await axios.get(
       "http://localhost:3005/customer//find-by-id/" + id
     );
-    setSelectedCustomer(response.data)
+    setSelectedCustomer(response.data);
     setName(response.data.name);
     setAddress(response.data.address);
     setSalary(response.data.sallery);
@@ -82,16 +93,18 @@ const Order: React.FC = () => {
     setDescription(response.data.description);
     setUnitPrice(response.data.unitPrice);
     setQtyOnHand(response.data.qtyOnHand);
-    setSelectedProduct(response.data)
+    setSelectedProduct(response.data);
   };
 
   const addToCart = (newItem: Cart) => {
     setCart((prevState) => [...prevState, newItem]);
+
+    calTotal();
+
     setDescription("");
     setUnitPrice("");
-    setQtyOnHand('');
-    setQty(0)
-    
+    setQtyOnHand("");
+    setQty(0);
   };
 
   return (
@@ -215,7 +228,13 @@ const Order: React.FC = () => {
           <div className="col-12 col-sm-6 col-md-2">
             <div className="form-group">
               <label htmlFor="qty">Qty</label>
-              <input type="number" className="form-control" id="qty" value={qty} onChange={(e) => setQty(parseFloat(e.target.value))}/>
+              <input
+                type="number"
+                className="form-control"
+                id="qty"
+                value={qty}
+                onChange={(e) => setQty(parseFloat(e.target.value))}
+              />
             </div>
           </div>
 
@@ -229,12 +248,16 @@ const Order: React.FC = () => {
               onClick={() => {
                 const cartProduct: Cart = {
                   _id: selectedProduct?._id,
-                  productName: selectedProduct?.description,
+                  description: selectedProduct?.description,
                   unitPrice: selectedProduct?.unitPrice,
                   qty: qty,
-                  total: (qty * (selectedProduct?.unitPrice?selectedProduct?.unitPrice:0)),
+                  total:
+                    qty *
+                    (selectedProduct?.unitPrice
+                      ? selectedProduct?.unitPrice
+                      : 0),
                 };
-                addToCart(cartProduct)
+                addToCart(cartProduct);
               }}
             >
               + Add Product
@@ -260,12 +283,22 @@ const Order: React.FC = () => {
                 {cart.map((data, index) => (
                   <tr key={index}>
                     <td>#{data._id}</td>
-                    <td>{data.productName}</td>
+                    <td>{data.description}</td>
                     <td>{data.unitPrice}</td>
                     <td>{data.qty}</td>
                     <td>{data.total}</td>
                     <td>
-                      <button className="btn btn-outline-danger btn-sm">
+                      <button
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={(e) => {
+                          setCart((prevState) =>
+                            prevState.filter(
+                              (cartdata) => cartdata._id !== data._id
+                            )
+                          );
+                          calTotal();
+                        }}
+                      >
                         Remove
                       </button>
                     </td>
@@ -278,7 +311,23 @@ const Order: React.FC = () => {
                 <h1 style={totalContext}>Total : 25400.00</h1>
               </div>
               <div className="place-order-button-context">
-                <button className="btn btn-primary">Place Order</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={async () => {
+                    const response = await axios.post(
+                      "http://localhost:3005/order/create",
+                      {
+                        date: new Date(),
+                        customerDetails: selectedCustomer,
+                        totalCost: 140,
+                        products: cart,
+                      }
+                    );
+                    
+                  }}
+                >
+                  Place Order
+                </button>
               </div>
             </div>
           </div>

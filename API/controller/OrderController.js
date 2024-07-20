@@ -2,21 +2,25 @@ const { response } = require("express");
 const orderSchema = require("../model/OrderSchema");
 
 const create = (req, res) => {
-  const order = new orderSchema({
+
+  
+  try{const order = new orderSchema({
     date: req.body.date,
     customerDetails: req.body.customerDetails,
     totalCost: req.body.totalCost,
     products: req.body.products,
   });
 
+  
+
   order
     .save()
-    .then((resp) => {
-      return res.status(201).json({ message: "order saved!" });
-    })
-    .catch((error) => {
+    .then((response) => {
+      return res.status(201).json({ message: "order saved!" , response});
+    })}
+    catch{(error) => {
       return res.status(500).json(error);
-    });
+    }};
 };
 
 
