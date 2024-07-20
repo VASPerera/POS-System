@@ -11,7 +11,7 @@ interface Product {
   name: string;
   description: string;
   image: string;
-  unitPrice: string;
+  unitPrice: number;
   qtyOnHand: string;
 }
 

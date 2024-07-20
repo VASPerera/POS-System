@@ -3,47 +3,58 @@ import Customer from "./Customer";
 import axios from "axios";
 import Product from "./Product";
 
-const Order:React.FC = () =>  {
+interface Cart {
+  _id: String | undefined;
+  productName: String | undefined;
+  unitPrice: number | undefined;
+  qty: number | undefined;
+  total: number | undefined;
+}
+
+const Order: React.FC = () => {
   const styleObj: React.CSSProperties = {
     marginBottom: "20px",
   };
 
-  const bottomContext:React.CSSProperties = {
+  const bottomContext: React.CSSProperties = {
     width: "100%",
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  }
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  };
 
-  const totalContext:React.CSSProperties = {
-    color : 'red',
-    margin : '0'
-  }
+  const totalContext: React.CSSProperties = {
+    color: "red",
+    margin: "0",
+  };
 
-  const [customers, setCustomers] = useState<Customer[]>([])
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [cart, setCart] = useState<Cart[]>([]);
 
   const [name, setName] = useState("");
+  const [qty, setQty] = useState<number>(0);
   const [address, setAddress] = useState("");
   const [salary, setSalary] = useState<number>();
+
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   const [pname, setPName] = useState("");
   const [description, setDescription] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
   const [qtyOnHand, setQtyOnHand] = useState("");
-  
 
   useEffect(() => {
     findAllCustomers();
     findAllProducts();
-  },[])
+  }, []);
 
   const findAllCustomers = async () => {
     const response = await axios.get(
       "http://localhost:3005/customer/find-all?searchText=&page=1&size=10"
     );
     setCustomers(response.data);
-    
   };
 
   const findAllProducts = async () => {
@@ -51,30 +62,37 @@ const Order:React.FC = () =>  {
       "http://localhost:3005/product/find-all?searchText=&page=1&size=10"
     );
     setProducts(response.data);
-    
   };
 
-  const getCustomerById = async(id:any) => {
+  const getCustomerById = async (id: any) => {
     const response = await axios.get(
       "http://localhost:3005/customer//find-by-id/" + id
     );
+    setSelectedCustomer(response.data)
+    setName(response.data.name);
+    setAddress(response.data.address);
+    setSalary(response.data.sallery);
+  };
 
-    setName(response.data.name)
-    setAddress(response.data.address)
-    setSalary(response.data.sallery)
-    
-  }
-
-  const getProductById = async(id: any) => {
+  const getProductById = async (id: any) => {
     const response = await axios.get(
       "http://localhost:3005/product/find-by-id/" + id
     );
-    setPName(response.data.name)
-    setDescription(response.data.description)
-    setUnitPrice(response.data.unitPrice)
-    setQtyOnHand(response.data.qtyOnHand)
-  }
+    setPName(response.data.name);
+    setDescription(response.data.description);
+    setUnitPrice(response.data.unitPrice);
+    setQtyOnHand(response.data.qtyOnHand);
+    setSelectedProduct(response.data)
+  };
 
+  const addToCart = (newItem: Cart) => {
+    setCart((prevState) => [...prevState, newItem]);
+    setDescription("");
+    setUnitPrice("");
+    setQtyOnHand('');
+    setQty(0)
+    
+  };
 
   return (
     <div>
@@ -84,19 +102,30 @@ const Order:React.FC = () =>  {
           <div className="col-12 col-sm-6 col-md-3" style={styleObj}>
             <div className="form-group">
               <label htmlFor="customer">Select Customer</label>
-              <select id="customer" className="form-control" onChange={(e) => getCustomerById(e.target.value)}>
+              <select
+                id="customer"
+                className="form-control"
+                onChange={(e) => getCustomerById(e.target.value)}
+              >
                 <option value="">select value</option>
-                {customers.map((customer, index)=> (
-                    <option key={index} value={customer._id}>{customer.name}</option>
+                {customers.map((customer, index) => (
+                  <option key={index} value={customer._id}>
+                    {customer.name}
+                  </option>
                 ))}
-                
               </select>
             </div>
           </div>
           <div className="col-12 col-sm-6 col-md-3" style={styleObj}>
             <div className="form-group">
               <label htmlFor="name">Customer name</label>
-              <input type="text" className="form-control" id="name"  disabled value={name}/>
+              <input
+                type="text"
+                className="form-control"
+                id="name"
+                disabled
+                value={name}
+              />
             </div>
           </div>
           <div className="col-12 col-sm-6 col-md-3">
@@ -129,16 +158,21 @@ const Order:React.FC = () =>  {
           <div className="col-12 col-sm-6 col-md-3" style={styleObj}>
             <div className="form-group">
               <label htmlFor="product">Select Product</label>
-              <select id="product" className="form-control" onChange={(e) => {
-                getProductById(e.target.value)
-              }}>
-                {products.map((product,index) => (
-                    <option key={index} value={product._id}>{product.name}</option>
+              <select
+                id="product"
+                className="form-control"
+                onChange={(e) => {
+                  getProductById(e.target.value);
+                }}
+              >
+                {products.map((product, index) => (
+                  <option key={index} value={product._id}>
+                    {product.name}
+                  </option>
                 ))}
                 <option value="#" disabled>
                   Use Options
                 </option>
-                
               </select>
             </div>
           </div>
@@ -181,7 +215,7 @@ const Order:React.FC = () =>  {
           <div className="col-12 col-sm-6 col-md-2">
             <div className="form-group">
               <label htmlFor="qty">Qty</label>
-              <input type="number" className="form-control" id="qty" />
+              <input type="number" className="form-control" id="qty" value={qty} onChange={(e) => setQty(parseFloat(e.target.value))}/>
             </div>
           </div>
 
@@ -190,7 +224,21 @@ const Order:React.FC = () =>  {
 
         <div className="row">
           <div className="col-12">
-            <button className="btn btn-primary col-12">+ Add Product</button>
+            <button
+              className="btn btn-primary col-12"
+              onClick={() => {
+                const cartProduct: Cart = {
+                  _id: selectedProduct?._id,
+                  productName: selectedProduct?.description,
+                  unitPrice: selectedProduct?.unitPrice,
+                  qty: qty,
+                  total: (qty * (selectedProduct?.unitPrice?selectedProduct?.unitPrice:0)),
+                };
+                addToCart(cartProduct)
+              }}
+            >
+              + Add Product
+            </button>
           </div>
         </div>
         <hr></hr>
@@ -206,27 +254,26 @@ const Order:React.FC = () =>  {
                   <th>QTY</th>
                   <th>Total</th>
                   <th>Delete Option</th>
-                  
                 </tr>
               </thead>
               <tbody>
-                <tr>  
-                  <td>#00001</td>
-                  <td>Product 1</td>
-                  <td>240.00</td>
-                  <td>20</td>
-                  <td>4800.00</td>
-                  <td>
-                    <button className="btn btn-outline-danger btn-sm">
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-                
+                {cart.map((data, index) => (
+                  <tr key={index}>
+                    <td>#{data._id}</td>
+                    <td>{data.productName}</td>
+                    <td>{data.unitPrice}</td>
+                    <td>{data.qty}</td>
+                    <td>{data.total}</td>
+                    <td>
+                      <button className="btn btn-outline-danger btn-sm">
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
             <div className="bottom-context" style={bottomContext}>
-
               <div className="total-order">
                 <h1 style={totalContext}>Total : 25400.00</h1>
               </div>
@@ -239,6 +286,6 @@ const Order:React.FC = () =>  {
       </div>
     </div>
   );
-}
+};
 
 export default Order;
