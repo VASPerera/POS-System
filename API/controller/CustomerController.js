@@ -86,10 +86,25 @@ const findALL = (req, res) => {
     }
 };
 
+const findALLCount = (req, res) => {
+  try {
+      
+      customerSchema.countDocuments().then(response => {
+        return res.status(200).json(response)
+
+        
+      })
+      
+  } catch (error) {
+      return res.status(500).json({'message': 'internal server error'});
+  }
+};
+
 module.exports = {
   create,
   findById,
   update,
   deleteById,
   findALL,
+  findALLCount
 };

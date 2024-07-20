@@ -1,3 +1,4 @@
+const { response } = require("express");
 const orderSchema = require("../model/OrderSchema");
 
 const create = (req, res) => {
@@ -73,12 +74,27 @@ const findALL = (req, res) => {
             query.$text = {$search : searchText}
         }
         const skip = (pageNumber-1) * pageSize
-        const data = orderSchema.find(query).limit(pageSize).skip(skip)
+        orderSchema.find(query).limit(pageSize).skip(skip).then(response => {
+          return res.status(200).json(response);
+        })
 
-        return res.status(200).json(data);
     } catch (error) {
         return res.status(500).json({'message': 'internal server error'});
     }
+};
+
+const findALLCount = (req, res) => {
+  try {
+      
+      orderSchema.countDocuments().then(response => {
+        return res.status(200).json(response)
+
+        
+      })
+      
+  } catch (error) {
+      return res.status(500).json({'message': 'internal server error'});
+  }
 };
 
 module.exports = {
@@ -87,4 +103,5 @@ module.exports = {
   update,
   deleteById,
   findALL,
+  findALLCount
 };

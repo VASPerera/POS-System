@@ -1,10 +1,10 @@
 import React from "react";
 
 interface DefaultCardData {
-    tumbnail : String,
+    tumbnail : String | undefined,
     title : String,
     description : String,
-    value : String
+    value : number | undefined
 }
 
 export default function DefaultCard(props: DefaultCardData) {
