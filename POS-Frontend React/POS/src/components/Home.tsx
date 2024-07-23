@@ -45,7 +45,7 @@ const Home:React.FC = () => {
 
     const income = await axios.get(
       "http://localhost:3005/order/find-all-income"
-    );
+    ); 
     setIncome(income.data.totalCostSum)
     
   };

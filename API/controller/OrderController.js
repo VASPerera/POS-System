@@ -101,10 +101,10 @@ const findALLCount = (req, res) => {
   }
 };
 
-const findALLIncome = (req, res) => {
+const findALLIncome = async(req, res) => {
   try {
       
-      const result= orderSchema.aggregate([
+      const result= await orderSchema.aggregate([
         {
           $group: {
             _id: null,
@@ -112,6 +112,8 @@ const findALLIncome = (req, res) => {
           }
         }
       ])
+
+      console.log(result.length)
 
       const totalCostSum = result.length > 0 ? result[0].totalCostSum : 0;
 
