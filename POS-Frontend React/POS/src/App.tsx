@@ -4,6 +4,8 @@ import Home from "./components/Home";
 import Customer from "./components/Customer";
 import Product from "./components/Product";
 import Order from "./components/Order";
+import Calculator from "./components/Calculator";
+
 
 function App() {
   return (
@@ -40,6 +42,9 @@ function App() {
                     <Link className="nav-link"to="/product">
                       Products
                     </Link>
+                    <Link className="nav-link"to="/cal">
+                      calculator
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -50,6 +55,7 @@ function App() {
           <Route path="/customer" element={<Customer></Customer>}></Route>
           <Route path="/product" element={<Product></Product>}></Route>
           <Route path="/orders" element={<Order></Order>}></Route>
+          <Route path="/cal" element={<Calculator></Calculator>}></Route>
         </Routes>
       </BrowserRouter>
     </>

@@ -113,7 +113,7 @@ const findALLIncome = async(req, res) => {
         }
       ])
 
-      console.log(result.length)
+      
 
       const totalCostSum = result.length > 0 ? result[0].totalCostSum : 0;
 
